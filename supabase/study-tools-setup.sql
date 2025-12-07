@@ -88,10 +88,41 @@ CREATE POLICY "Users can delete their own study guides"
   ON public.study_guides FOR DELETE
   USING (auth.uid() = user_id);
 
+-- AI Chat History table
+CREATE TABLE IF NOT EXISTS public.ai_chat_history (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  assignment_id UUID REFERENCES public.assignments(id) ON DELETE CASCADE,
+  message_type TEXT NOT NULL CHECK (message_type IN ('user', 'assistant')),
+  content TEXT NOT NULL,
+  context TEXT, -- JSON string with additional context
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable Row Level Security for AI chat
+ALTER TABLE public.ai_chat_history ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for ai_chat_history
+CREATE POLICY "Users can view their own chat history"
+  ON public.ai_chat_history FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create their own chat messages"
+  ON public.ai_chat_history FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own chat history"
+  ON public.ai_chat_history FOR DELETE
+  USING (auth.uid() = user_id);
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_assignments_user_id ON public.assignments(user_id);
 CREATE INDEX IF NOT EXISTS idx_assignments_due_date ON public.assignments(due_date);
+CREATE INDEX IF NOT EXISTS idx_assignments_completed ON public.assignments(completed);
 CREATE INDEX IF NOT EXISTS idx_flashcards_user_id ON public.flashcards(user_id);
 CREATE INDEX IF NOT EXISTS idx_flashcards_topic ON public.flashcards(topic);
 CREATE INDEX IF NOT EXISTS idx_study_guides_user_id ON public.study_guides(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_chat_user_id ON public.ai_chat_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_chat_assignment_id ON public.ai_chat_history(assignment_id);
+CREATE INDEX IF NOT EXISTS idx_ai_chat_created_at ON public.ai_chat_history(created_at DESC);
 

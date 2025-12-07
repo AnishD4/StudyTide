@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import db from '../../../lib/db'
+import { createClient } from '@/lib/supabase/server'
 
 // ============================================================================
 // CONSTANTS
@@ -133,13 +133,41 @@ function formatAssignment(row) {
 // ============================================================================
 
 /**
- * GET /api/assignments - Fetch all assignments
+ * GET /api/assignments - Fetch all assignments for the authenticated user
  */
 export async function GET() {
   try {
-    const rows = db.prepare('SELECT * FROM assignments ORDER BY id DESC').all()
-    return NextResponse.json(rows.map(formatAssignment))
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { data: assignments, error } = await supabase
+      .from('assignments')
+      .select('*, classes(name, color)')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+
+    // Format for frontend compatibility
+    const formatted = (assignments || []).map(a => ({
+      id: a.id,
+      title: a.title,
+      dueDate: a.due_date,
+      difficulty: a.difficulty ?? DEFAULT_DIFFICULTY,
+      estimatedMinutes: a.estimated_minutes,
+      completed: a.completed,
+      className: a.classes?.name,
+      classColor: a.classes?.color,
+      priority: a.priority
+    }))
+
+    return NextResponse.json(formatted)
   } catch (error) {
+    console.error('Error fetching assignments:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
@@ -149,7 +177,14 @@ export async function GET() {
  */
 export async function POST(request) {
   try {
-    const { title, dueDate, description } = await request.json()
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { title, dueDate, description, classId } = await request.json()
 
     // Default due date: 2 days from now
     const finalDueDate = dueDate || getDefaultDueDate()
@@ -163,25 +198,35 @@ export async function POST(request) {
 
     console.log('Assignment created:', { title, minutes, difficulty, finalDueDate })
 
-    // Insert into database
-    const stmt = db.prepare(`
-      INSERT INTO assignments (title, dueDate, difficulty, estimatedMinutes, description, completed)
-      VALUES (?, ?, ?, ?, ?, 0)
-    `)
-    const result = stmt.run(title, finalDueDate, difficulty, minutes, description || null)
+    // Insert into Supabase
+    const { data: newAssignment, error } = await supabase
+      .from('assignments')
+      .insert({
+        user_id: user.id,
+        title,
+        due_date: finalDueDate,
+        difficulty,
+        estimated_minutes: minutes,
+        class_id: classId || null,
+        completed: false
+      })
+      .select()
+      .single()
+
+    if (error) throw error
 
     // Return created assignment
     return NextResponse.json({
-      id: result.lastInsertRowid,
-      title,
-      dueDate: finalDueDate,
-      difficulty,
-      estimatedMinutes: minutes,
-      description: description || null,
-      completed: false
+      id: newAssignment.id,
+      title: newAssignment.title,
+      dueDate: newAssignment.due_date,
+      difficulty: newAssignment.difficulty,
+      estimatedMinutes: newAssignment.estimated_minutes,
+      completed: newAssignment.completed
     }, { status: 201 })
 
   } catch (error) {
+    console.error('Error creating assignment:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
@@ -191,17 +236,38 @@ export async function POST(request) {
  */
 export async function PATCH(request) {
   try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { id, completed } = await request.json()
 
-    db.prepare('UPDATE assignments SET completed = ? WHERE id = ?').run(completed ? 1 : 0, id)
+    const { data: updated, error } = await supabase
+      .from('assignments')
+      .update({ completed })
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .select()
+      .single()
 
-    const row = db.prepare('SELECT * FROM assignments WHERE id = ?').get(id)
-    if (!row) {
+    if (error) throw error
+    if (!updated) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
 
-    return NextResponse.json(formatAssignment(row))
+    return NextResponse.json({
+      id: updated.id,
+      title: updated.title,
+      dueDate: updated.due_date,
+      difficulty: updated.difficulty,
+      estimatedMinutes: updated.estimated_minutes,
+      completed: updated.completed
+    })
   } catch (error) {
+    console.error('Error updating assignment:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
@@ -211,10 +277,26 @@ export async function PATCH(request) {
  */
 export async function DELETE(request) {
   try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { id } = await request.json()
-    db.prepare('DELETE FROM assignments WHERE id = ?').run(id)
+
+    const { error } = await supabase
+      .from('assignments')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id)
+
+    if (error) throw error
+
     return NextResponse.json({ ok: true })
   } catch (error) {
+    console.error('Error deleting assignment:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }

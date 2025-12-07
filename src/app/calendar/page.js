@@ -31,13 +31,7 @@ export default function CalendarPage() {
 
   useEffect(() => {
     if (!authLoading && user) {
-      // Load events from localStorage or fetch from API
-      const saved = localStorage.getItem('studytide-calendar-events')
-      if (saved) {
-        setEvents(JSON.parse(saved))
-      } else {
-        fetchAssignments()
-      }
+      fetchAssignments()
     }
   }, [authLoading, user])
 
@@ -45,15 +39,25 @@ export default function CalendarPage() {
     try {
       const res = await fetch('/api/assignments')
       const data = await res.json()
+
       if (Array.isArray(data)) {
+        // Merge saved manual events with assignments
+        const saved = localStorage.getItem('studytide-calendar-events')
+        const manualEvents = saved ? JSON.parse(saved) : []
+
         const assignmentEvents = data.map(a => ({
           id: `assignment-${a.id}`,
-          title: a.title,
+          title: a.completed ? `✅ ${a.title}` : a.title,
           date: a.dueDate,
           type: 'assignment',
-          completed: a.completed
+          completed: a.completed,
+          className: a.className,
+          classColor: a.classColor
         }))
-        setEvents(assignmentEvents)
+
+        // Combine with manual events
+        const allEvents = [...manualEvents, ...assignmentEvents]
+        setEvents(allEvents)
       }
     } catch (err) {
       console.error('Error fetching assignments:', err)
