@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import VantaWavesBackground from '@/components/VantaWavesBackground'
 
 const CLASS_COLORS = [
   { name: 'Indigo', value: '#6366f1' },
@@ -224,35 +225,40 @@ export default function ClassesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
+      <VantaWavesBackground className="min-h-screen">
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-cyan-400 border-t-transparent mx-auto mb-4"></div>
+            <p className="text-cyan-200">⛵ Gathering your fleet...</p>
+          </div>
+        </div>
+      </VantaWavesBackground>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <VantaWavesBackground className="min-h-screen">
+      {/* Header - Ocean themed */}
+      <nav className="bg-slate-900/70 backdrop-blur-md shadow-lg border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+              <Link href="/dashboard" className="text-cyan-300 hover:text-white transition-colors">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </Link>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">My Classes</h1>
+              <h1 className="text-xl font-bold text-white flex items-center gap-2">
+                <span>⛵</span> My Fleet
+              </h1>
             </div>
             <div className="flex items-center">
               <button
                 onClick={openCreateModal}
-                className="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                className="px-4 py-2 bg-cyan-400/20 hover:bg-cyan-400/30 text-white font-medium rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2 border border-cyan-400/30"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Add Class
+                <span>🚢</span>
+                Add Ship
               </button>
             </div>
           </div>
@@ -260,27 +266,36 @@ export default function ClassesPage() {
       </nav>
 
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        {/* GPA Summary Card */}
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl shadow-lg p-6 mb-8 text-white">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        {/* GPA Summary Card - Ocean themed dark glass */}
+        <div className="bg-gradient-to-r from-cyan-900/70 via-teal-900/70 to-emerald-900/70 backdrop-blur-md rounded-2xl shadow-xl p-6 mb-8 text-white relative overflow-hidden border border-white/20">
+          {/* Wave decoration */}
+          <div className="absolute bottom-0 left-0 w-full h-16 opacity-20">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-full">
+              <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="currentColor" className="text-cyan-400"/>
+            </svg>
+          </div>
+
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 relative z-10">
             <div>
-              <h2 className="text-lg font-medium text-indigo-100">Current GPA</h2>
+              <h2 className="text-lg font-medium text-cyan-200 flex items-center gap-2">
+                <span>🏆</span> Treasure Score (GPA)
+              </h2>
               <div className="flex items-baseline gap-2">
-                <span className="text-5xl font-bold">{gpaData.gpa}</span>
-                <span className="text-indigo-200">/ 4.0</span>
+                <span className="text-5xl font-bold text-white">{gpaData.gpa}</span>
+                <span className="text-cyan-300">/ 4.0</span>
               </div>
-              <p className="text-indigo-200 mt-1">{gpaData.totalCredits} credits</p>
+              <p className="text-cyan-300 mt-1">🪙 {gpaData.totalCredits} treasure credits</p>
             </div>
             <div className="flex gap-4">
-              <div className="bg-white/10 rounded-xl p-4 text-center">
-                <div className="text-3xl font-bold">{classes.length}</div>
-                <div className="text-sm text-indigo-200">Classes</div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+                <div className="text-3xl font-bold text-white">{classes.length}</div>
+                <div className="text-sm text-cyan-200">⛵ Ships</div>
               </div>
-              <div className="bg-white/10 rounded-xl p-4 text-center">
-                <div className="text-3xl font-bold">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+                <div className="text-3xl font-bold text-white">
                   {classes.filter(c => c.current_grade >= 90).length}
                 </div>
-                <div className="text-sm text-indigo-200">A's</div>
+                <div className="text-sm text-amber-300">🌟 A's</div>
               </div>
             </div>
           </div>
@@ -288,19 +303,17 @@ export default function ClassesPage() {
 
         {/* Classes Grid */}
         {classes.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
+          <div className="text-center py-16 bg-slate-900/50 backdrop-blur-md rounded-2xl border border-white/20">
+            <div className="w-20 h-20 bg-slate-800/80 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-4xl">⛵</span>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No classes yet</h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">Add your first class to start tracking grades</p>
+            <h3 className="text-lg font-medium text-white mb-2">No ships in your fleet yet</h3>
+            <p className="text-gray-300 mb-6">Add your first class to start tracking grades</p>
             <button
               onClick={openCreateModal}
-              className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+              className="px-6 py-3 bg-gradient-to-r from-cyan-400 to-teal-400 text-slate-900 font-semibold rounded-xl hover:from-cyan-500 hover:to-teal-500 transition-all shadow-lg"
             >
-              Add Your First Class
+              🚢 Launch Your First Ship
             </button>
           </div>
         ) : (
@@ -579,9 +592,9 @@ export default function ClassesPage() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="flex-1 px-4 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                    className="flex-1 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-500 text-white font-medium rounded-xl hover:from-cyan-600 hover:to-teal-600 transition-all disabled:opacity-50 shadow-lg"
                   >
-                    {saving ? 'Saving...' : editingClass ? 'Save Changes' : 'Create Class'}
+                    {saving ? '🌊 Launching...' : editingClass ? '✨ Save Changes' : '🚢 Launch Ship'}
                   </button>
                 </div>
               </form>
@@ -589,7 +602,7 @@ export default function ClassesPage() {
           </div>
         </div>
       )}
-    </div>
+    </VantaWavesBackground>
   )
 }
 

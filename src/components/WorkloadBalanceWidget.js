@@ -1,14 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
 
 export default function WorkloadBalanceWidget() {
   const [loading, setLoading] = useState(true)
   const [workloadData, setWorkloadData] = useState(null)
   const [procrastinationRisks, setProcrastinationRisks] = useState([])
   const [expanded, setExpanded] = useState(false)
-  const supabase = createClient()
 
   useEffect(() => {
     loadData()
@@ -38,41 +36,41 @@ export default function WorkloadBalanceWidget() {
   }
 
   const getBalanceColor = (score) => {
-    if (score >= 70) return 'text-emerald-500'
+    if (score >= 70) return 'text-teal-500'
     if (score >= 40) return 'text-amber-500'
-    return 'text-red-500'
+    return 'text-rose-500'
   }
 
   const getBalanceBg = (score) => {
-    if (score >= 70) return 'bg-emerald-100 dark:bg-emerald-900/30'
-    if (score >= 40) return 'bg-amber-100 dark:bg-amber-900/30'
-    return 'bg-red-100 dark:bg-red-900/30'
+    if (score >= 70) return 'bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-900/30 dark:to-emerald-900/30 border-teal-200 dark:border-teal-700'
+    if (score >= 40) return 'bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/30 dark:to-yellow-900/30 border-amber-200 dark:border-amber-700'
+    return 'bg-gradient-to-br from-rose-50 to-orange-50 dark:from-rose-900/30 dark:to-orange-900/30 border-rose-200 dark:border-rose-700'
   }
 
   const getRiskColor = (level) => {
     switch (level) {
-      case 'critical': return 'bg-red-500 text-white'
-      case 'high': return 'bg-orange-500 text-white'
-      case 'medium': return 'bg-amber-400 text-gray-900'
-      default: return 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+      case 'critical': return 'bg-rose-500 text-white'
+      case 'high': return 'bg-amber-500 text-white'
+      case 'medium': return 'bg-sky-400 text-white'
+      default: return 'bg-teal-200 dark:bg-teal-700 text-teal-700 dark:text-teal-300'
     }
   }
 
   const getRiskIcon = (level) => {
     switch (level) {
-      case 'critical': return '🚨'
-      case 'high': return '⚠️'
-      case 'medium': return '📢'
-      default: return '✓'
+      case 'critical': return '🌊'
+      case 'high': return '⛈️'
+      case 'medium': return '🌧️'
+      default: return '☀️'
     }
   }
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+      <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 border border-cyan-200 dark:border-cyan-700">
         <div className="animate-pulse">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+          <div className="h-4 bg-cyan-200 dark:bg-cyan-700 rounded w-3/4 mb-2"></div>
+          <div className="h-8 bg-cyan-200 dark:bg-cyan-700 rounded w-1/2"></div>
         </div>
       </div>
     )
@@ -82,27 +80,27 @@ export default function WorkloadBalanceWidget() {
 
   return (
     <div className="space-y-4">
-      {/* Workload Balance Score */}
+      {/* Workload Balance Score - Ocean Tidal Gauge */}
       {workloadData && (
-        <div className={`rounded-xl p-4 border ${getBalanceBg(workloadData.summary.balanceScore)} border-gray-200 dark:border-gray-700`}>
+        <div className={`rounded-xl p-4 border ${getBalanceBg(workloadData.summary.balanceScore)}`}>
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-              ⚖️ Workload Balance
+              🌊 Tidal Balance
             </h3>
             <span className={`text-2xl font-bold ${getBalanceColor(workloadData.summary.balanceScore)}`}>
               {workloadData.summary.balanceScore}%
             </span>
           </div>
 
-          {/* Progress bar */}
-          <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-2">
+          {/* Progress bar - Wave style */}
+          <div className="h-3 bg-cyan-100 dark:bg-cyan-900/50 rounded-full overflow-hidden mb-2">
             <div
               className={`h-full rounded-full transition-all duration-500 ${
                 workloadData.summary.balanceScore >= 70
-                  ? 'bg-emerald-500'
+                  ? 'bg-gradient-to-r from-teal-400 to-emerald-500'
                   : workloadData.summary.balanceScore >= 40
-                  ? 'bg-amber-500'
-                  : 'bg-red-500'
+                  ? 'bg-gradient-to-r from-amber-400 to-yellow-500'
+                  : 'bg-gradient-to-r from-rose-400 to-orange-500'
               }`}
               style={{ width: `${workloadData.summary.balanceScore}%` }}
             />
@@ -113,19 +111,19 @@ export default function WorkloadBalanceWidget() {
           </p>
 
           {workloadData.summary.overloadedDays > 0 && (
-            <div className="mt-2 text-sm text-amber-600 dark:text-amber-400">
-              ⚠️ {workloadData.summary.overloadedDays} overloaded day{workloadData.summary.overloadedDays > 1 ? 's' : ''} detected
+            <div className="mt-2 text-sm text-amber-600 dark:text-amber-400 flex items-center gap-1">
+              <span>⛈️</span> {workloadData.summary.overloadedDays} stormy day{workloadData.summary.overloadedDays > 1 ? 's' : ''} ahead
             </div>
           )}
 
           {/* Suggestions */}
           {workloadData.suggestions.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+            <div className="mt-3 pt-3 border-t border-cyan-200 dark:border-cyan-700">
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 flex items-center gap-1"
+                className="text-sm text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 flex items-center gap-1"
               >
-                {expanded ? '▼' : '▶'} View {workloadData.suggestions.length} suggestion{workloadData.suggestions.length > 1 ? 's' : ''}
+                {expanded ? '🔽' : '▶️'} View {workloadData.suggestions.length} navigation tip{workloadData.suggestions.length > 1 ? 's' : ''}
               </button>
 
               {expanded && (
@@ -135,11 +133,11 @@ export default function WorkloadBalanceWidget() {
                       key={i}
                       className={`p-2 rounded-lg text-sm ${
                         suggestion.severity === 'high'
-                          ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'
+                          ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-300'
                           : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300'
                       }`}
                     >
-                      {suggestion.message}
+                      🧭 {suggestion.message}
                     </div>
                   ))}
                 </div>
@@ -149,18 +147,18 @@ export default function WorkloadBalanceWidget() {
         </div>
       )}
 
-      {/* Procrastination Risks */}
+      {/* Procrastination Risks - Storm Warnings */}
       {highRisks.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-red-200 dark:border-red-800">
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 border border-rose-200 dark:border-rose-800">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-            🚨 Procrastination Alerts
+            ⛈️ Storm Warnings
           </h3>
 
           <div className="space-y-2">
             {highRisks.slice(0, 3).map((risk) => (
               <div
                 key={risk.assignment.id}
-                className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                className="flex items-center justify-between p-2 bg-gradient-to-r from-rose-50 to-amber-50 dark:from-rose-900/20 dark:to-amber-900/20 rounded-lg border border-rose-200 dark:border-rose-700"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
@@ -185,18 +183,18 @@ export default function WorkloadBalanceWidget() {
 
           {highRisks.length > 3 && (
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              +{highRisks.length - 3} more at risk
+              +{highRisks.length - 3} more storms brewing
             </p>
           )}
         </div>
       )}
 
-      {/* All Clear State */}
+      {/* All Clear State - Calm Seas */}
       {workloadData && workloadData.summary.balanceScore >= 70 && highRisks.length === 0 && (
-        <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800 text-center">
-          <div className="text-3xl mb-2">🎉</div>
-          <p className="text-emerald-700 dark:text-emerald-300 font-medium">You're on track!</p>
-          <p className="text-sm text-emerald-600 dark:text-emerald-400">Keep up the great work!</p>
+        <div className="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-xl p-4 border border-teal-200 dark:border-teal-700 text-center">
+          <div className="text-3xl mb-2">🏝️</div>
+          <p className="text-teal-700 dark:text-teal-300 font-medium">Smooth sailing ahead!</p>
+          <p className="text-sm text-teal-600 dark:text-teal-400">Keep riding these calm waves!</p>
         </div>
       )}
     </div>

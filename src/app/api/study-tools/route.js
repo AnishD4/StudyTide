@@ -41,10 +41,16 @@ ${assignments.map((a, i) => `${i + 1}. "${a.title}" - Due: ${a.dueDate || 'No da
 
 Return ONLY a JSON array of priority scores in the same order: [score1, score2, ...]`
 
-  const response = await callGemini(prompt, 500)
-  const match = response.match(/\[[\d,\s]+\]/)
-  if (match) {
-    return JSON.parse(match[0])
+  try {
+    const response = await callGemini(prompt, 500)
+    if (response) {
+      const match = response.match(/\[[\d,\s]+\]/)
+      if (match) {
+        return JSON.parse(match[0])
+      }
+    }
+  } catch (err) {
+    console.error('Gemini error:', err)
   }
   return assignments.map(() => 5)
 }
@@ -74,12 +80,18 @@ Create a realistic study schedule. Return JSON:
   "tip": "Study tip for today"
 }`
 
-  const response = await callGemini(prompt, 1000)
-  const match = response.match(/\{[\s\S]*\}/)
-  if (match) {
-    return JSON.parse(match[0])
+  try {
+    const response = await callGemini(prompt, 1000)
+    if (response) {
+      const match = response.match(/\{[\s\S]*\}/)
+      if (match) {
+        return JSON.parse(match[0])
+      }
+    }
+  } catch (err) {
+    console.error('Gemini error:', err)
   }
-  return { greeting: "Let's study!", tasks: [], tip: "Take breaks every 25 minutes." }
+  return { greeting: "Let's study! 🌊", tasks: incomplete.slice(0, 3).map(a => ({ title: a.title, duration: a.estimatedMinutes || 30, reason: "Priority task" })), tip: "Take breaks every 25 minutes." }
 }
 
 /**
@@ -125,10 +137,16 @@ Make cards focused and testable. Include a mix of:
 - Applications
 - Comparisons`
 
-  const response = await callGemini(prompt, 2000)
-  const match = response.match(/\[[\s\S]*\]/)
-  if (match) {
-    return JSON.parse(match[0])
+  try {
+    const response = await callGemini(prompt, 2000)
+    if (response) {
+      const match = response.match(/\[[\s\S]*\]/)
+      if (match) {
+        return JSON.parse(match[0])
+      }
+    }
+  } catch (err) {
+    console.error('Gemini error:', err)
   }
   return []
 }
@@ -162,12 +180,26 @@ Return JSON:
   "motivation": "Brief motivational message"
 }`
 
-  const response = await callGemini(prompt, 800)
-  const match = response.match(/\{[\s\S]*\}/)
-  if (match) {
-    return JSON.parse(match[0])
+  try {
+    const response = await callGemini(prompt, 800)
+    if (response) {
+      const match = response.match(/\{[\s\S]*\}/)
+      if (match) {
+        return JSON.parse(match[0])
+      }
+    }
+  } catch (err) {
+    console.error('Gemini error:', err)
   }
-  return { recommendation: "Start with your most urgent assignment!", urgent: [], topPick: incomplete[0]?.title }
+
+  // Fallback response when AI is unavailable
+  return {
+    recommendation: "Start with your most urgent assignment!",
+    urgent: incomplete.filter(a => a.dueDate && new Date(a.dueDate) <= new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)).map(a => a.title),
+    topPick: incomplete[0]?.title || "Check your assignments",
+    reason: "This is your highest priority task",
+    motivation: "You've got this! One task at a time. 🌊"
+  }
 }
 
 export async function POST(request) {

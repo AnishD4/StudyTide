@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import VantaWavesBackground from '@/components/VantaWavesBackground'
 
 const HABIT_ICONS = [
   { name: 'Book', value: '📚' },
@@ -291,43 +292,46 @@ export default function ProgressPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
+      <VantaWavesBackground className="min-h-screen">
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-cyan-400 border-t-transparent mx-auto mb-4"></div>
+            <p className="text-cyan-200">🌊 Loading your voyage...</p>
+          </div>
+        </div>
+      </VantaWavesBackground>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <VantaWavesBackground className="min-h-screen">
+      {/* Header - Ocean themed dark glass */}
+      <nav className="bg-slate-900/70 backdrop-blur-md shadow-lg border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+              <Link href="/dashboard" className="text-cyan-300 hover:text-white transition-colors">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </Link>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Progress & Habits</h1>
+              <h1 className="text-xl font-bold text-white flex items-center gap-2">
+                <span>🧭</span> Captain's Log
+              </h1>
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowSessionModal(true)}
-                className="px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2"
+                className="px-4 py-2 bg-gradient-to-r from-teal-400 to-cyan-400 text-slate-900 font-semibold rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2 hover:from-teal-500 hover:to-cyan-500"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Log Study Session
+                <span>⚓</span>
+                Log Voyage
               </button>
               <button
                 onClick={() => setShowHabitModal(true)}
-                className="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2 border border-white/20"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
+                <span>🐚</span>
                 New Habit
               </button>
             </div>
@@ -336,20 +340,26 @@ export default function ProgressPage() {
       </nav>
 
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        {/* Streak Cards */}
+        {/* Streak Cards - Ocean themed dark glass */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-6 text-white shadow-lg">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-orange-100">🔥 Study Streak</span>
+          <div className="bg-gradient-to-br from-cyan-900/70 to-teal-900/70 backdrop-blur-md rounded-2xl p-6 text-white shadow-xl relative overflow-hidden border border-cyan-500/30">
+            <div className="absolute top-0 right-0 w-20 h-20 opacity-30">
+              <span className="text-6xl">🌊</span>
+            </div>
+            <div className="flex items-center justify-between mb-2 relative z-10">
+              <span className="text-cyan-200">🌊 Study Tide</span>
               <span className="text-xs bg-white/20 px-2 py-1 rounded-full">Best: {streaks.study?.longest_streak || 0}</span>
             </div>
-            <div className="text-4xl font-bold">{streaks.study?.current_streak || 0}</div>
-            <div className="text-orange-200 text-sm mt-1">days in a row</div>
+            <div className="text-4xl font-bold relative z-10">{streaks.study?.current_streak || 0}</div>
+            <div className="text-cyan-300 text-sm mt-1 relative z-10">days sailing</div>
           </div>
 
-          <div className="bg-gradient-to-br from-purple-500 to-indigo-500 rounded-2xl p-6 text-white shadow-lg">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-purple-100">✨ Habit Streak</span>
+          <div className="bg-gradient-to-br from-violet-900/70 to-purple-900/70 backdrop-blur-md rounded-2xl p-6 text-white shadow-xl relative overflow-hidden border border-violet-500/30">
+            <div className="absolute top-0 right-0 w-20 h-20 opacity-30">
+              <span className="text-6xl">🐚</span>
+            </div>
+            <div className="flex items-center justify-between mb-2 relative z-10">
+              <span className="text-purple-200">✨ Habit Streak</span>
               <span className="text-xs bg-white/20 px-2 py-1 rounded-full">Best: {streaks.habit?.longest_streak || 0}</span>
             </div>
             <div className="text-4xl font-bold">{streaks.habit?.current_streak || 0}</div>
@@ -918,15 +928,15 @@ export default function ProgressPage() {
                   <button
                     type="button"
                     onClick={() => setShowSessionModal(false)}
-                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                    className="flex-1 px-4 py-2 border border-white/20 text-gray-200 rounded-xl hover:bg-white/10 transition-all"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+                    className="flex-1 px-4 py-2 bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-900 font-semibold rounded-xl hover:from-emerald-500 hover:to-teal-500 transition-all shadow-lg"
                   >
-                    Log Session
+                    ⚓ Log Session
                   </button>
                 </div>
               </form>
@@ -934,7 +944,7 @@ export default function ProgressPage() {
           </div>
         </div>
       )}
-    </div>
+    </VantaWavesBackground>
   )
 }
 

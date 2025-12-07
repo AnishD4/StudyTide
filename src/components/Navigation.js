@@ -5,15 +5,16 @@ import { usePathname } from "next/navigation";
 import "./Navigation.css";
 
 const navItems = [
-  { href: "/", label: "Home", icon: "🏠" },
-  { href: "/dashboard", label: "Dashboard", icon: "📊" },
-  { href: "/calendar", label: "Calendar", icon: "📅" },
-  { href: "/settings", label: "Settings", icon: "⚙️" },
+  { href: "/", label: "Shore", icon: "🏝️" },
+  { href: "/dashboard", label: "Captain's Deck", icon: "🧭" },
+  { href: "/calendar", label: "Tidal Chart", icon: "📅" },
+  { href: "/classes", label: "Fleet", icon: "⛵" },
+  { href: "/progress", label: "Voyage Log", icon: "📜" },
 ];
 
 const authItems = [
-  { href: "/login", label: "Login", icon: "🔑" },
-  { href: "/signup", label: "Sign Up", icon: "✨" },
+  { href: "/login", label: "Board Ship", icon: "⚓" },
+  { href: "/signup", label: "Join Crew", icon: "🏴‍☠️" },
 ];
 
 export default function Navigation() {
@@ -27,7 +28,7 @@ export default function Navigation() {
       <div className="nav-container">
         <Link href="/" className="nav-logo">
           <span className="logo-icon">🌊</span>
-          <span className="logo-text">StudyTide</span>
+          <span className="logo-text">Study<span className="text-cyan-300">Tide</span></span>
         </Link>
 
         <div className="nav-links">

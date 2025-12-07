@@ -7,6 +7,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { format, differenceInDays, addDays } from "date-fns";
 import WorkloadBalanceWidget from "@/components/WorkloadBalanceWidget";
+import VantaWavesBackground from "@/components/VantaWavesBackground";
 import "./calendar.css";
 
 // Sample initial events - in a real app, these would come from a database
@@ -193,51 +194,52 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="calendar-container">
-      {/* Header */}
-      <header className="calendar-header">
-        <h1>🌊 StudyTide Calendar</h1>
-        <div className="view-toggle">
-          <button
-            className={currentView === "dayGridMonth" ? "active" : ""}
-            onClick={() => changeView("dayGridMonth")}
-          >
-            📅 Month
-          </button>
-          <button
-            className={currentView === "timeGridWeek" ? "active" : ""}
-            onClick={() => changeView("timeGridWeek")}
-          >
-            📆 Week
-          </button>
-        </div>
-      </header>
+    <VantaWavesBackground className="min-h-screen">
+      <div className="calendar-container">
+        {/* Header */}
+        <header className="calendar-header">
+          <h1>🌊 StudyTide Calendar</h1>
+          <div className="view-toggle">
+            <button
+              className={currentView === "dayGridMonth" ? "active" : ""}
+              onClick={() => changeView("dayGridMonth")}
+            >
+              📅 Month
+            </button>
+            <button
+              className={currentView === "timeGridWeek" ? "active" : ""}
+              onClick={() => changeView("timeGridWeek")}
+            >
+              📆 Week
+            </button>
+          </div>
+        </header>
 
-      <div className="calendar-layout">
-        {/* Reminders Sidebar */}
-        <aside className="reminders-sidebar">
-          <h2>🔔 Reminders</h2>
-          {reminders.length === 0 ? (
-            <p className="no-reminders">All caught up! No upcoming reminders.</p>
-          ) : (
-            <div className="reminders-list">
-              {reminders.map((reminder) => (
-                <div
-                  key={reminder.id}
-                  className={`reminder-card ${reminder.urgent ? "urgent" : ""} ${reminder.type}`}
-                >
-                  <div className="reminder-content">
-                    <h3>{reminder.title}</h3>
-                    <p>{reminder.message}</p>
-                  </div>
-                  <button
-                    className="dismiss-btn"
-                    onClick={() => dismissReminder(reminder.id)}
-                    title="Dismiss"
+        <div className="calendar-layout">
+          {/* Reminders Sidebar */}
+          <aside className="reminders-sidebar">
+            <h2>🔔 Reminders</h2>
+            {reminders.length === 0 ? (
+              <p className="no-reminders">All caught up! No upcoming reminders.</p>
+            ) : (
+              <div className="reminders-list">
+                {reminders.map((reminder) => (
+                  <div
+                    key={reminder.id}
+                    className={`reminder-card ${reminder.urgent ? "urgent" : ""} ${reminder.type}`}
                   >
-                    ×
-                  </button>
-                </div>
+                    <div className="reminder-content">
+                      <h3>{reminder.title}</h3>
+                      <p>{reminder.message}</p>
+                    </div>
+                    <button
+                      className="dismiss-btn"
+                      onClick={() => dismissReminder(reminder.id)}
+                      title="Dismiss"
+                    >
+                      ×
+                    </button>
+                  </div>
               ))}
             </div>
           )}
@@ -408,7 +410,8 @@ export default function CalendarPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </VantaWavesBackground>
   );
 }
 

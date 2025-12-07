@@ -84,23 +84,23 @@ export default function EmailComposer({ isOpen, onClose, prefilledContext }) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-gradient-to-br from-white via-cyan-50/50 to-white dark:from-slate-800 dark:via-cyan-900/20 dark:to-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col border border-cyan-200 dark:border-cyan-800 shadow-2xl">
+        {/* Header - Ocean themed */}
+        <div className="p-4 bg-gradient-to-r from-cyan-500 to-teal-500 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              ✉️ Email Composer
+            <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+              <span>🐚</span> Message in a Bottle
             </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {step === 1 && 'Select the type of email'}
-              {step === 2 && 'Add details for your email'}
-              {step === 3 && 'Review and send your email'}
+            <p className="text-sm text-cyan-100">
+              {step === 1 && 'Choose your message type'}
+              {step === 2 && 'Add voyage details'}
+              {step === 3 && 'Review before sending'}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -120,9 +120,9 @@ export default function EmailComposer({ isOpen, onClose, prefilledContext }) {
                     setEmailType(type.value)
                     setStep(2)
                   }}
-                  className={`p-4 rounded-xl border-2 text-left transition-all hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 ${
+                  className={`p-4 rounded-xl border-2 text-left transition-all hover:border-cyan-500 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 hover:scale-105 ${
                     emailType === type.value
-                      ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
+                      ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20'
                       : 'border-gray-200 dark:border-gray-700'
                   }`}
                 >
@@ -285,12 +285,12 @@ export default function EmailComposer({ isOpen, onClose, prefilledContext }) {
                 </div>
               </div>
 
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                <h4 className="font-medium text-blue-800 dark:text-blue-300 mb-2">💡 Tips</h4>
-                <ul className="text-sm text-blue-700 dark:text-blue-400 space-y-1">
-                  <li>• Review and personalize the email before sending</li>
-                  <li>• Add specific details that are relevant to your situation</li>
-                  <li>• Check for any placeholders like [Your Name] that need to be filled</li>
+              <div className="bg-cyan-50 dark:bg-cyan-900/20 p-4 rounded-xl border border-cyan-200 dark:border-cyan-700">
+                <h4 className="font-medium text-cyan-800 dark:text-cyan-300 mb-2">🐚 Captain's Tips</h4>
+                <ul className="text-sm text-cyan-700 dark:text-cyan-400 space-y-1">
+                  <li>• Review and personalize before sending to shore</li>
+                  <li>• Add specific details relevant to your voyage</li>
+                  <li>• Check for any placeholders like [Your Name]</li>
                 </ul>
               </div>
             </div>
@@ -298,15 +298,15 @@ export default function EmailComposer({ isOpen, onClose, prefilledContext }) {
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-between">
+        <div className="p-4 border-t border-cyan-200 dark:border-cyan-800 flex justify-between bg-gradient-to-r from-cyan-50/50 to-teal-50/50 dark:from-cyan-900/10 dark:to-teal-900/10">
           <button
             onClick={() => {
               if (step > 1) setStep(step - 1)
               else reset()
             }}
-            className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
           >
-            {step > 1 ? '← Back' : 'Cancel'}
+            {step > 1 ? '← Back to Port' : 'Abandon'}
           </button>
 
           <div className="flex gap-2">
@@ -314,15 +314,15 @@ export default function EmailComposer({ isOpen, onClose, prefilledContext }) {
               <button
                 onClick={generateEmail}
                 disabled={loading}
-                className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2"
+                className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-500 text-white rounded-xl hover:from-cyan-600 hover:to-teal-600 disabled:opacity-50 flex items-center gap-2 shadow-lg transition-all transform hover:scale-105"
               >
                 {loading ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Generating...
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    Crafting...
                   </>
                 ) : (
-                  <>✨ Generate Email</>
+                  <>🌊 Generate Message</>
                 )}
               </button>
             )}

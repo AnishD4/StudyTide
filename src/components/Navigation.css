@@ -1,13 +1,13 @@
-/* Navigation Styles */
+/* Navigation Styles - Ocean Theme Dark Glass */
 .main-nav {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.85);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(8, 47, 73, 0.9) 50%, rgba(15, 23, 42, 0.85) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(0, 119, 182, 0.1);
-  box-shadow: 0 2px 20px rgba(2, 62, 138, 0.08);
+  border-bottom: 1px solid rgba(72, 202, 228, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
 
 .nav-container {
@@ -28,7 +28,7 @@
   text-decoration: none;
   font-weight: 700;
   font-size: 1.25rem;
-  color: #023e8a;
+  color: white;
   transition: transform 0.2s ease;
 }
 
@@ -38,13 +38,17 @@
 
 .logo-icon {
   font-size: 1.5rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
 }
 
 .logo-text {
-  background: linear-gradient(135deg, #023e8a 0%, #0077b6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 /* Nav Links */
@@ -62,26 +66,32 @@
   gap: 0.5rem;
   padding: 0.625rem 1rem;
   text-decoration: none;
-  color: #0077b6;
+  color: rgba(148, 226, 245, 0.9);
   font-weight: 500;
   font-size: 0.9rem;
-  border-radius: 10px;
+  border-radius: 12px;
   transition: all 0.2s ease;
 }
 
 .nav-link:hover {
-  background: rgba(0, 119, 182, 0.1);
-  color: #023e8a;
+  background: rgba(72, 202, 228, 0.15);
+  color: white;
+  transform: translateY(-2px);
 }
 
 .nav-link.active {
-  background: linear-gradient(135deg, #0077b6 0%, #0096c7 100%);
+  background: rgba(6, 182, 212, 0.3);
   color: white;
-  box-shadow: 0 4px 15px rgba(0, 119, 182, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(72, 202, 228, 0.3);
 }
 
 .nav-icon {
   font-size: 1.1rem;
+}
+
+.nav-link:hover .nav-icon {
+  animation: float 1s ease-in-out;
 }
 
 /* Auth Links */
@@ -93,19 +103,20 @@
 
 .auth-link {
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 .auth-link:last-child {
-  background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%);
-  color: white;
+  background: linear-gradient(135deg, #06b6d4, #14b8a6);
+  color: #0f172a;
+  font-weight: 600;
 }
 
 .auth-link:last-child:hover {
-  background: linear-gradient(135deg, #023e8a 0%, #0077b6 100%);
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(0, 119, 182, 0.3);
+  background: linear-gradient(135deg, #22d3ee, #2dd4bf);
+  color: #0f172a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
 }
 
 /* Mobile Menu Button */
@@ -123,7 +134,7 @@
   display: block;
   width: 24px;
   height: 2px;
-  background: #0077b6;
+  background: white;
   border-radius: 2px;
   transition: all 0.3s ease;
 }
