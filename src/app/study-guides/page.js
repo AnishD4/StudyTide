@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import VantaWavesBackground from '@/components/VantaWavesBackground'
 
 export default function StudyGuidesPage() {
   const [topic, setTopic] = useState('')
@@ -96,9 +97,9 @@ export default function StudyGuidesPage() {
 
   if (currentGuide) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950">
+      <VantaWavesBackground className="min-h-screen" darkOverlay={true}>
         <main className="max-w-4xl mx-auto p-6 pt-8">
-          <button onClick={() => setCurrentGuide(null)} className="mb-6 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-2">
+          <button onClick={() => setCurrentGuide(null)} className="mb-6 text-sm text-cyan-300 hover:text-cyan-200 flex items-center gap-2">
             ← Back to Study Guides
           </button>
 
@@ -108,15 +109,15 @@ export default function StudyGuidesPage() {
             <div className="prose prose-indigo dark:prose-invert max-w-none">{formatContent(currentGuide.content)}</div>
           </div>
         </main>
-      </div>
+      </VantaWavesBackground>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950">
+    <VantaWavesBackground className="min-h-screen" darkOverlay={true}>
       <main className="max-w-4xl mx-auto p-6 pt-8">
-        <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">📖 Study Guides</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">Generate comprehensive study guides for any topic</p>
+        <h1 className="text-3xl font-bold mb-2 text-white drop-shadow-lg">📖 Study Guides</h1>
+        <p className="text-gray-100 mb-8 drop-shadow-md">Generate comprehensive study guides for any topic</p>
 
         <form onSubmit={handleGenerate} className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 mb-8 shadow-sm">
           <div className="grid gap-4">
@@ -189,6 +190,6 @@ export default function StudyGuidesPage() {
           </div>
         )}
       </main>
-    </div>
+    </VantaWavesBackground>
   )
 }
