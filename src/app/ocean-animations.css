@@ -1,0 +1,412 @@
+/* Ocean Theme - Enhanced Animations & Styles */
+
+/* Keyframe Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes wave {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(-25px) translateY(-10px);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes bubble-rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes drift {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(10px) rotate(5deg);
+  }
+  75% {
+    transform: translateX(-10px) rotate(-5deg);
+  }
+}
+
+/* Utility Classes */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-wave {
+  animation: wave 4s ease-in-out infinite;
+}
+
+.animate-drift {
+  animation: drift 6s ease-in-out infinite;
+}
+
+.animate-bubble {
+  animation: bubble-rise 8s ease-in infinite;
+}
+
+/* Ocean Gradient Backgrounds */
+.bg-ocean-gradient {
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #14b8a6 100%);
+}
+
+.bg-ocean-deep {
+  background: linear-gradient(180deg, #0c4a6e 0%, #155e75 50%, #0e7490 100%);
+}
+
+.bg-ocean-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(6, 182, 212, 0.1) 0%,
+    rgba(34, 211, 238, 0.3) 50%,
+    rgba(6, 182, 212, 0.1) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 3s infinite linear;
+}
+
+/* Glass Morphism */
+.glass-ocean {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.glass-ocean-light {
+  background: rgba(240, 249, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+/* Bubble Effects */
+.bubble {
+  position: absolute;
+  bottom: -100px;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(6, 182, 212, 0.3));
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.5),
+              0 0 20px rgba(6, 182, 212, 0.3);
+}
+
+.bubble-1 {
+  width: 60px;
+  height: 60px;
+  left: 10%;
+  animation: bubble-rise 7s ease-in infinite;
+  animation-delay: 0s;
+}
+
+.bubble-2 {
+  width: 40px;
+  height: 40px;
+  left: 30%;
+  animation: bubble-rise 9s ease-in infinite;
+  animation-delay: 2s;
+}
+
+.bubble-3 {
+  width: 80px;
+  height: 80px;
+  left: 50%;
+  animation: bubble-rise 8s ease-in infinite;
+  animation-delay: 4s;
+}
+
+.bubble-4 {
+  width: 50px;
+  height: 50px;
+  left: 70%;
+  animation: bubble-rise 10s ease-in infinite;
+  animation-delay: 1s;
+}
+
+.bubble-5 {
+  width: 70px;
+  height: 70px;
+  left: 90%;
+  animation: bubble-rise 11s ease-in infinite;
+  animation-delay: 3s;
+}
+
+/* Wave Border Effect */
+.wave-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.wave-border::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 60px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z' fill='%2306b6d4' fill-opacity='0.1'/%3E%3C/svg%3E") repeat-x;
+  animation: wave 10s linear infinite;
+}
+
+/* Hover Effects */
+.hover-float {
+  transition: transform 0.3s ease;
+}
+
+.hover-float:hover {
+  transform: translateY(-5px);
+}
+
+.hover-ocean {
+  transition: all 0.3s ease;
+}
+
+.hover-ocean:hover {
+  box-shadow: 0 10px 30px rgba(6, 182, 212, 0.3);
+  border-color: rgba(6, 182, 212, 0.5);
+}
+
+/* Icon Animations */
+.icon-spin-slow {
+  animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.icon-bounce {
+  animation: bounce 2s ease-in-out infinite;
+}
+
+/* Text Effects */
+.text-ocean-gradient {
+  background: linear-gradient(135deg, #06b6d4 0%, #14b8a6 50%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    #06b6d4 0%,
+    #22d3ee 25%,
+    #06b6d4 50%,
+    #22d3ee 75%,
+    #06b6d4 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+/* Card Hover Effects */
+.card-ocean {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.card-ocean:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(6, 182, 212, 0.25),
+              0 0 60px rgba(6, 182, 212, 0.1);
+  border-color: rgba(6, 182, 212, 0.4);
+}
+
+/* Ripple Effect on Click */
+.ripple-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-effect::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.ripple-effect:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Scroll Animations */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.fade-in-up-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.fade-in-up-delay-3 {
+  animation-delay: 0.3s;
+}
+
+/* Loading Spinner */
+.spinner-ocean {
+  border: 3px solid rgba(6, 182, 212, 0.1);
+  border-top-color: #06b6d4;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Pulse Glow */
+.pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(6, 182, 212, 0.6),
+                0 0 60px rgba(6, 182, 212, 0.3);
+  }
+}
+
+/* Navbar Specific */
+.nav-ocean {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 47, 73, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+}
+
+.nav-link-ocean {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-link-ocean::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #06b6d4, #14b8a6);
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+
+.nav-link-ocean:hover::after,
+.nav-link-ocean.active::after {
+  width: 100%;
+}
+
+/* Button Styles */
+.btn-ocean {
+  background: linear-gradient(135deg, #06b6d4 0%, #14b8a6 100%);
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-ocean:hover {
+  background: linear-gradient(135deg, #0891b2 0%, #0d9488 100%);
+  box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-ocean:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(6, 182, 212, 0.3);
+}
+
+/* Tooltip Ocean */
+.tooltip-ocean {
+  position: relative;
+}
+
+.tooltip-ocean::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  background: rgba(15, 23, 42, 0.95);
+  color: white;
+  border-radius: 8px;
+  font-size: 14px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+.tooltip-ocean:hover::before {
+  opacity: 1;
+}
+
