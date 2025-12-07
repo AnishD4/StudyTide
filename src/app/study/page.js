@@ -84,10 +84,16 @@ export default function StudyPage() {
         })
       })
       const data = await res.json()
-      if (data.questions) setTestData(data)
-      else alert('Failed to generate test')
+      if (data.questions && Array.isArray(data.questions) && data.questions.length > 0) {
+        setTestData(data)
+      } else {
+        const errorMsg = data.error || 'Failed to generate test. Please try again with a different topic or check if GEMINI_API_KEY is configured.'
+        alert(errorMsg)
+        console.error('Test generation failed:', data)
+      }
     } catch (err) {
-      alert('Error generating test')
+      alert('Error generating test: ' + err.message)
+      console.error('Test generation error:', err)
     } finally {
       setLoading(false)
     }

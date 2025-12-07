@@ -10,19 +10,19 @@ const mainNavItems = [
   { href: "/", label: "Home", icon: "🏠" },
   { href: "/dashboard", label: "Dashboard", icon: "📊" },
   { href: "/calendar", label: "Calendar", icon: "📅" },
-  { href: "/classes", label: "Classes", icon: "📚" },
 ];
 
-const studyNavItems = [
+const academicNavItems = [
+  { href: "/classes", label: "Classes", icon: "📚" },
   { href: "/assignments", label: "Assignments", icon: "📝" },
-  { href: "/study", label: "Study Tools", icon: "🎯" },
+  { href: "/study", label: "Study Tools", icon: "🧠" },
   { href: "/flashcards", label: "Flashcards", icon: "🃏" },
   { href: "/study-guides", label: "Study Guides", icon: "📖" },
 ];
 
 const trackingNavItems = [
-  { href: "/goals", label: "Goals", icon: "🎯" },
   { href: "/progress", label: "Progress", icon: "📈" },
+  { href: "/goals", label: "Goals", icon: "🎯" },
   { href: "/reflections", label: "Reflections", icon: "💭" },
   { href: "/extracurriculars", label: "Activities", icon: "⚽" },
 ];
@@ -37,7 +37,7 @@ export default function Navigation() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [studyDropdownOpen, setStudyDropdownOpen] = useState(false);
+  const [academicDropdownOpen, setAcademicDropdownOpen] = useState(false);
   const [trackingDropdownOpen, setTrackingDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -56,6 +56,19 @@ export default function Navigation() {
     });
 
     return () => subscription.unsubscribe();
+  }, []);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.nav-dropdown')) {
+        setAcademicDropdownOpen(false);
+        setTrackingDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
   // Don't show nav on auth pages
@@ -96,26 +109,26 @@ export default function Navigation() {
             </Link>
           ))}
 
-          {/* Study Dropdown - only show when logged in */}
+          {/* Academic Dropdown - only show when logged in */}
           {user && (
             <div className="nav-dropdown">
               <button
-                className={`nav-link dropdown-trigger ${studyNavItems.some(item => isActiveLink(item.href)) ? "active" : ""}`}
-                onClick={() => setStudyDropdownOpen(!studyDropdownOpen)}
+                className={`nav-link dropdown-trigger ${academicNavItems.some(item => isActiveLink(item.href)) ? "active" : ""}`}
+                onClick={() => setAcademicDropdownOpen(!academicDropdownOpen)}
               >
                 <span className="nav-icon">📚</span>
-                <span className="nav-label">Study</span>
-                <span className="dropdown-arrow">{studyDropdownOpen ? "▲" : "▼"}</span>
+                <span className="nav-label">Academic</span>
+                <span className="dropdown-arrow">{academicDropdownOpen ? "▲" : "▼"}</span>
               </button>
-              {studyDropdownOpen && (
+              {academicDropdownOpen && (
                 <div className="dropdown-menu">
-                  {studyNavItems.map((item) => (
+                  {academicNavItems.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
                       className={`dropdown-item ${isActiveLink(item.href) ? "active" : ""}`}
                       onClick={() => {
-                        setStudyDropdownOpen(false);
+                        setAcademicDropdownOpen(false);
                         setMobileMenuOpen(false);
                       }}
                     >

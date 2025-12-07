@@ -8,7 +8,10 @@ const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/
  */
 async function generateTest(topic, questionCount = 5, focusAreas = null, studyMaterial = null) {
   const apiKey = process.env.GEMINI_API_KEY
-  if (!apiKey) return null
+  if (!apiKey) {
+    console.error('GEMINI_API_KEY not set')
+    return null
+  }
 
   let focusText = ''
   if (focusAreas?.length) {
@@ -64,15 +67,33 @@ Make questions challenging but fair. Vary difficulty.`
 
     const data = await res.json()
     if (data.error) {
-      console.error('Gemini error:', data.error)
+      console.error('Gemini API error:', data.error)
       return null
     }
 
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
-    const jsonMatch = text.match(/\{[\s\S]*}/)
-    if (!jsonMatch) return null
+    console.log('Gemini response length:', text.length)
 
-    return JSON.parse(jsonMatch[0])
+    if (!text) {
+      console.error('No text in Gemini response')
+      return null
+    }
+
+    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      console.error('No JSON found in response:', text.substring(0, 200))
+      return null
+    }
+
+    try {
+      const parsed = JSON.parse(jsonMatch[0])
+      console.log('Successfully parsed test with', parsed.questions?.length, 'questions')
+      return parsed
+    } catch (parseErr) {
+      console.error('JSON parse error:', parseErr.message)
+      console.error('JSON string:', jsonMatch[0].substring(0, 200))
+      return null
+    }
   } catch (err) {
     console.error('Test generation error:', err)
     return null

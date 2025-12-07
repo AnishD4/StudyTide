@@ -10,22 +10,33 @@ const GEMINI_MODEL = 'gemini-2.5-flash'
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`
 
 // Reference table for AI estimation
-const ESTIMATION_PROMPT = `You estimate academic tasks. Use this reference:
+const ESTIMATION_PROMPT = `You are an academic task estimator. Estimate the time (in minutes) and difficulty (1-10 scale) for this assignment.
 
+Reference guide:
 | Task Type | Minutes | Difficulty |
 |-----------|---------|------------|
-| Math Worksheet | 20 | 3 |
-| Reading Assignment | 30 | 2 |
-| Short Essay (1-2 pages) | 90 | 4 |
-| Lab Report | 90 | 5 |
-| Long Essay (3-5 pages) | 240 | 6 |
-| Programming Project | 60 | 7 |
-| Research Paper | 1200 | 8 |
-| Group Project | 300 | 6 |
+| Math worksheet (10-20 problems) | 20 | 3 |
+| Math homework (30-40 problems) | 45 | 4 |
+| Reading assignment (10-20 pages) | 30 | 2 |
+| Reading textbook chapter | 45 | 3 |
+| Short essay (1-2 pages) | 90 | 4 |
+| Essay (3-5 pages) | 180 | 5 |
+| Lab report | 120 | 5 |
+| Research paper (5-10 pages) | 600 | 8 |
+| Major research paper (10+ pages) | 900 | 9 |
+| Programming assignment (simple) | 60 | 6 |
+| Programming project (complex) | 240 | 8 |
+| Study for quiz | 30 | 3 |
+| Study for test | 90 | 5 |
+| Study for final exam | 240 | 7 |
+| Group project | 300 | 6 |
+| Presentation preparation | 120 | 5 |
+| Problem set (physics/chemistry) | 60 | 6 |
 
 Task: TASK_HERE
 
-Reply with ONLY two numbers: minutes,difficulty`
+Reply with ONLY two numbers separated by comma: minutes,difficulty
+Example: 45,4`
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -77,14 +88,25 @@ async function getAIEstimate(title, description = '') {
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || ''
     console.log('📝 Raw AI text:', text)
 
-    // Extract two numbers from the response
-    const numbers = text.match(/\d+/g)
-    console.log('🔢 Extracted numbers:', numbers)
+    // Try to extract numbers (format: "minutes,difficulty" or just numbers)
+    const cleanText = text.trim().replace(/[^\d,]/g, '') // Remove all non-digits and non-commas
+    const parts = cleanText.split(',').filter(Boolean)
 
+    console.log('🔢 Extracted parts:', parts)
+
+    if (parts.length >= 2) {
+      const minutes = Math.min(1440, Math.max(5, parseInt(parts[0], 10)))
+      const difficulty = Math.min(10, Math.max(1, parseInt(parts[1], 10)))
+      console.log('✅ Parsed result:', { minutes, difficulty })
+      return { minutes, difficulty }
+    }
+
+    // Fallback: try to extract any numbers
+    const numbers = text.match(/\d+/g)
     if (numbers && numbers.length >= 2) {
       const minutes = Math.min(1440, Math.max(5, parseInt(numbers[0], 10)))
       const difficulty = Math.min(10, Math.max(1, parseInt(numbers[1], 10)))
-      console.log('✅ Parsed result:', { minutes, difficulty })
+      console.log('✅ Parsed result (fallback):', { minutes, difficulty })
       return { minutes, difficulty }
     }
 
