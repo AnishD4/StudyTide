@@ -107,7 +107,11 @@ export default function SettingsPage() {
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
-      // Update profile
+      if (!user) {
+        throw new Error('You must be logged in to save settings')
+      }
+
+      // Update profile - use upsert with onConflict
       const { error: profileError } = await supabase
         .from('profiles')
         .upsert({
@@ -115,26 +119,54 @@ export default function SettingsPage() {
           email: user.email,
           full_name: profile.full_name,
           avatar_url: profile.avatar_url,
-        })
+        }, { onConflict: 'id' })
 
-      if (profileError) throw profileError
+      if (profileError) {
+        console.error('Profile error:', profileError)
+        throw new Error(profileError.message || 'Failed to update profile')
+      }
 
-      // Update settings
+      // Check if settings exist
+      const { data: existingSettings } = await supabase
+        .from('user_settings')
+        .select('id')
+        .eq('user_id', user.id)
+        .single()
+
+      // Prepare settings data
       const { id, created_at, updated_at, ...settingsToSave } = settings
 
-      const { error: settingsError } = await supabase
-        .from('user_settings')
-        .upsert({
-          ...settingsToSave,
-          user_id: user.id,
-        })
+      if (existingSettings) {
+        // Update existing settings
+        const { error: settingsError } = await supabase
+          .from('user_settings')
+          .update(settingsToSave)
+          .eq('user_id', user.id)
 
-      if (settingsError) throw settingsError
+        if (settingsError) {
+          console.error('Settings error:', settingsError)
+          throw new Error(settingsError.message || 'Failed to update settings')
+        }
+      } else {
+        // Insert new settings
+        const { error: settingsError } = await supabase
+          .from('user_settings')
+          .insert({
+            ...settingsToSave,
+            user_id: user.id,
+          })
+
+        if (settingsError) {
+          console.error('Settings error:', settingsError)
+          throw new Error(settingsError.message || 'Failed to create settings')
+        }
+      }
 
       setMessage({ type: 'success', text: 'Settings saved successfully!' })
     } catch (error) {
       console.error('Error saving settings:', error)
-      setMessage({ type: 'error', text: 'Failed to save settings. Please try again.' })
+      const errorMessage = error.message || 'Failed to save settings. Make sure database tables are created.'
+      setMessage({ type: 'error', text: errorMessage })
     } finally {
       setSaving(false)
     }
