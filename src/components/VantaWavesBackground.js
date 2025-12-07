@@ -6,18 +6,16 @@ import Script from 'next/script'
 export default function VantaWavesBackground({ children, className = '', darkOverlay = true }) {
   const vantaRef = useRef(null)
   const [vantaEffect, setVantaEffect] = useState(null)
-  const [scriptsLoaded, setScriptsLoaded] = useState({ three: false, vanta: false })
 
   useEffect(() => {
-    // Only initialize when both scripts are loaded
-    if (!scriptsLoaded.three || !scriptsLoaded.vanta) return
     if (vantaEffect) return
     if (!vantaRef.current) return
 
-    // Small delay to ensure scripts are fully executed
-    const timer = setTimeout(() => {
+    // Initialize Vanta effect
+    const initVanta = () => {
       if (typeof window !== 'undefined' && window.VANTA && window.THREE) {
         try {
+          console.log('Initializing Vanta...')
           const effect = window.VANTA.WAVES({
             el: vantaRef.current,
             THREE: window.THREE,
@@ -36,14 +34,36 @@ export default function VantaWavesBackground({ children, className = '', darkOve
             zoom: 1,
           })
           setVantaEffect(effect)
+          console.log('Vanta initialized successfully')
         } catch (error) {
           console.error('Error initializing Vanta:', error)
         }
+      } else {
+        console.log('Waiting for scripts...', {
+          hasVANTA: !!window.VANTA,
+          hasTHREE: !!window.THREE
+        })
+      }
+    }
+
+    // Poll for scripts to be available
+    let attempts = 0
+    const maxAttempts = 50 // Try for up to 5 seconds
+    const pollInterval = setInterval(() => {
+      attempts++
+      if (typeof window !== 'undefined' && window.VANTA && window.THREE) {
+        clearInterval(pollInterval)
+        initVanta()
+      } else if (attempts >= maxAttempts) {
+        clearInterval(pollInterval)
+        console.error('Failed to load Vanta scripts after 5 seconds')
       }
     }, 100)
 
-    return () => clearTimeout(timer)
-  }, [scriptsLoaded, vantaEffect])
+    return () => {
+      clearInterval(pollInterval)
+    }
+  }, [vantaEffect])
 
   // Cleanup on unmount
   useEffect(() => {
@@ -60,13 +80,13 @@ export default function VantaWavesBackground({ children, className = '', darkOve
       <Script
         src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"
         strategy="afterInteractive"
-        onLoad={() => setScriptsLoaded(prev => ({ ...prev, three: true }))}
+        onLoad={() => console.log('Three.js loaded')}
       />
       {/* Load Vanta Waves */}
       <Script
         src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.24/vanta.waves.min.js"
         strategy="afterInteractive"
-        onLoad={() => setScriptsLoaded(prev => ({ ...prev, vanta: true }))}
+        onLoad={() => console.log('Vanta.js loaded')}
       />
 
       <div ref={vantaRef} className={`relative ${className}`}>
