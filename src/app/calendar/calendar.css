@@ -28,7 +28,7 @@
 
 /* Calendar Container */
 .calendar-container {
-  min-height: 100vh;
+  min-height: calc(100vh - 60px);
   padding: 1.5rem;
   background:
     radial-gradient(ellipse at 30% 0%, rgba(144, 224, 239, 0.4) 0%, transparent 50%),

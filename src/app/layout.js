@@ -1,4 +1,5 @@
 import "./globals.css";
+import Navigation from "@/components/Navigation";
 
 export const metadata = {
   title: "StudyTide - AI-Powered Student Organizer",
@@ -9,7 +10,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="antialiased font-sans">
-        {children}
+        <Navigation />
+        <main>{children}</main>
       </body>
     </html>
   );
