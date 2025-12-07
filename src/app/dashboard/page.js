@@ -1,15 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { CompassIcon } from '@/components/OceanIcons'
-import DashboardWidgets from '@/components/DashboardWidgets'
-import VantaWavesBackground from '@/components/VantaWavesBackground'
 
 export default function DashboardPage() {
   const [recommendation, setRecommendation] = useState(null)
   const [dailyPlan, setDailyPlan] = useState(null)
   const [availableTime, setAvailableTime] = useState(180)
-  const [loading, setLoading] = useState({ recommendation: true, plan: false })
+  const [loading, setLoading] = useState({ recommendation: false, plan: false })
+  const [error, setError] = useState(null)
 
   // Fetch "What should I study?" on load
   useEffect(() => {
@@ -18,16 +16,19 @@ export default function DashboardPage() {
 
   async function fetchRecommendation() {
     setLoading(prev => ({ ...prev, recommendation: true }))
+    setError(null)
     try {
       const res = await fetch('/api/study-tools', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'what-to-study' })
       })
+      if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
       setRecommendation(data)
     } catch (err) {
       console.error('Error:', err)
+      setRecommendation({ recommendation: "Add some assignments to get personalized study recommendations!" })
     } finally {
       setLoading(prev => ({ ...prev, recommendation: false }))
     }
@@ -41,10 +42,12 @@ export default function DashboardPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'daily-plan', availableMinutes: availableTime })
       })
+      if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
       setDailyPlan(data)
     } catch (err) {
       console.error('Error:', err)
+      setDailyPlan({ greeting: "Add assignments first to generate a study plan!", tasks: [] })
     } finally {
       setLoading(prev => ({ ...prev, plan: false }))
     }
@@ -64,193 +67,117 @@ export default function DashboardPage() {
   }
 
   return (
-    <VantaWavesBackground className="min-h-screen">
-      <main className="max-w-4xl mx-auto p-6 relative z-10">
-        {/* Hero Section */}
-        <div className="mb-8 text-center">
-          <div className="inline-flex items-center gap-2 mb-2">
-            <span className="text-4xl animate-float">🌊</span>
-            <h1 className="text-3xl font-bold text-white drop-shadow-lg">
-              Captain's Deck
-            </h1>
-            <span className="text-4xl animate-float" style={{ animationDelay: '0.5s' }}>⚓</span>
-          </div>
-          <p className="text-cyan-200 drop-shadow">Navigate your academic journey with StudyTide</p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950">
+      <main className="max-w-4xl mx-auto p-6 pt-8">
+        <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">📊 Dashboard</h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-8">Your personalized study hub</p>
 
-        {/* Dashboard Widgets - Procrastination & Tools */}
-        <DashboardWidgets />
-
-        {/* What Should I Study? - Treasure Map Style */}
+        {/* What Should I Study? */}
         <section className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-white drop-shadow flex items-center gap-2">
-              <span className="text-2xl">🗺️</span> Treasure to Discover
-              <span className="text-sm font-normal text-cyan-200">- What to study next</span>
-            </h2>
-            <button
-              onClick={fetchRecommendation}
-              className="text-sm text-cyan-200 hover:text-white flex items-center gap-1 transition-colors bg-white/10 px-3 py-1 rounded-lg backdrop-blur-sm"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Refresh
-            </button>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">📚 What Should I Study?</h2>
+            <button onClick={fetchRecommendation} className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300">Refresh</button>
           </div>
 
           {loading.recommendation ? (
-            <div className="rounded-2xl border border-white/20 bg-slate-900/60 backdrop-blur-md p-6 text-center shadow-xl">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-cyan-400 border-t-transparent"></div>
-              <p className="mt-3 text-cyan-300">🔍 Scanning the seas for treasure...</p>
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 text-center shadow-sm">
+              <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-indigo-600 border-t-transparent"></div>
+              <p className="mt-2 text-gray-500">Analyzing your assignments...</p>
             </div>
           ) : recommendation ? (
-            <div className="rounded-2xl border border-white/20 bg-slate-900/60 backdrop-blur-md p-6 relative overflow-hidden shadow-xl">
-              {/* Decorative compass */}
-              <div className="absolute top-4 right-4 opacity-20">
-                <CompassIcon className="w-24 h-24 text-cyan-400" />
-              </div>
-
-              <p className="text-lg text-gray-100 mb-4 relative z-10">{recommendation.recommendation}</p>
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+              <p className="text-lg mb-4 text-gray-900 dark:text-white">{recommendation.recommendation}</p>
 
               {recommendation.topPick && (
-                <div className="bg-gradient-to-r from-teal-900/80 to-cyan-900/80 rounded-xl p-4 mb-4 border border-teal-500/30 relative z-10">
-                  <div className="text-sm text-teal-300 mb-1 flex items-center gap-1">
-                    <span>🏴‍☠️</span> X marks the spot:
-                  </div>
-                  <div className="text-xl font-bold text-teal-200">{recommendation.topPick}</div>
-                  {recommendation.reason && (
-                    <div className="text-sm text-teal-400 mt-1">{recommendation.reason}</div>
-                  )}
+                <div className="bg-indigo-50 dark:bg-indigo-900/30 rounded-xl p-4 mb-4">
+                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Start with:</div>
+                  <div className="text-xl font-semibold text-indigo-600 dark:text-indigo-400">{recommendation.topPick}</div>
+                  {recommendation.reason && <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">{recommendation.reason}</div>}
                 </div>
               )}
 
               {recommendation.urgent && recommendation.urgent.length > 0 && (
-                <div className="mb-4 relative z-10">
-                  <div className="text-sm text-rose-300 mb-2 flex items-center gap-1">
-                    <span>🌊</span> Incoming Waves (Urgent):
-                  </div>
+                <div className="mb-4">
+                  <div className="text-sm text-red-600 dark:text-red-400 mb-2">⚠️ Urgent:</div>
                   <div className="flex flex-wrap gap-2">
                     {recommendation.urgent.map((task, i) => (
-                      <span key={i} className="px-3 py-1 bg-rose-500/20 border border-rose-400/40 rounded-full text-sm text-rose-200">
-                        {task}
-                      </span>
+                      <span key={i} className="px-3 py-1 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-full text-sm text-red-700 dark:text-red-300">{task}</span>
                     ))}
                   </div>
                 </div>
               )}
 
-              {recommendation.motivation && (
-                <p className="text-sm text-cyan-300 italic relative z-10">
-                  🐚 {recommendation.motivation}
-                </p>
-              )}
+              {recommendation.motivation && <p className="text-sm text-gray-500 dark:text-gray-400 italic">💪 {recommendation.motivation}</p>}
             </div>
-          ) : null}
+          ) : (
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm text-center text-gray-500">
+              Add assignments to get study recommendations
+            </div>
+          )}
         </section>
 
-        {/* Auto-Prioritize - Lighthouse */}
+        {/* Auto-Prioritize */}
         <section className="mb-8">
-          <div className="rounded-2xl border border-amber-400/30 bg-gradient-to-br from-amber-900/70 to-orange-900/70 backdrop-blur-md p-6 relative overflow-hidden shadow-xl">
-            <div className="absolute top-0 right-0 w-32 h-32 opacity-30">
-              <span className="text-8xl">🏮</span>
-            </div>
-
-            <h2 className="text-lg font-semibold text-amber-100 mb-2 flex items-center gap-2">
-              <span className="text-2xl">🗼</span> Lighthouse Guidance
-            </h2>
-            <p className="text-sm text-amber-200/80 mb-4">
-              Let our lighthouse illuminate the path ahead - AI will analyze and sort your assignments by urgency.
-            </p>
-            <button
-              onClick={handlePrioritize}
-              className="px-6 py-2.5 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-slate-900 font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
-            >
-              ✨ Light the Way
+          <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">🎯 AI Priority Sorting</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Let AI analyze your assignments and sort them by urgency.</p>
+            <button onClick={handlePrioritize} className="px-4 py-2 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors">
+              Auto-Prioritize My Assignments
             </button>
           </div>
         </section>
 
-        {/* Daily Study Plan - Voyage Planner */}
+        {/* Daily Study Plan */}
         <section className="mb-8">
-          <h2 className="text-lg font-semibold text-white drop-shadow mb-4 flex items-center gap-2">
-            <span className="text-2xl">⛵</span> Voyage Planner
-            <span className="text-sm font-normal text-cyan-200">- Your daily study route</span>
-          </h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">📅 Daily Study Plan</h2>
 
-          <div className="rounded-2xl border border-white/20 bg-slate-900/60 backdrop-blur-md p-6 relative overflow-hidden shadow-xl">
-            <div className="flex items-end gap-4 mb-6 relative z-10">
+          <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+            <div className="flex items-end gap-4 mb-6">
               <div className="flex-1">
-                <label className="block text-sm text-cyan-200 mb-2">⏱️ Sailing time available</label>
-                <select
-                  value={availableTime}
-                  onChange={e => setAvailableTime(Number(e.target.value))}
-                  className="w-full rounded-xl border border-cyan-500/40 bg-slate-800/80 px-4 py-2.5 text-white focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all"
-                >
-                  <option value={60}>1 hour - Quick sail</option>
-                  <option value={120}>2 hours - Short voyage</option>
-                  <option value={180}>3 hours - Day trip</option>
-                  <option value={240}>4 hours - Long voyage</option>
-                  <option value={300}>5 hours - Expedition</option>
-                  <option value={480}>8 hours - Ocean crossing</option>
+                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">Available study time</label>
+                <select value={availableTime} onChange={e => setAvailableTime(Number(e.target.value))} className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 px-4 py-2 text-gray-900 dark:text-white focus:border-indigo-500 focus:outline-none">
+                  <option value={60}>1 hour</option>
+                  <option value={120}>2 hours</option>
+                  <option value={180}>3 hours</option>
+                  <option value={240}>4 hours</option>
+                  <option value={300}>5 hours</option>
+                  <option value={480}>8 hours</option>
                 </select>
               </div>
-              <button
-                onClick={fetchDailyPlan}
-                disabled={loading.plan}
-                className="px-6 py-2.5 bg-gradient-to-r from-cyan-400 to-teal-400 hover:from-cyan-500 hover:to-teal-500 text-slate-900 font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl disabled:opacity-50 transform hover:scale-105"
-              >
-                {loading.plan ? (
-                  <span className="flex items-center gap-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                    Charting...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <span>🧭</span> Chart Course
-                  </span>
-                )}
+              <button onClick={fetchDailyPlan} disabled={loading.plan} className="px-6 py-2 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors">
+                {loading.plan ? 'Generating...' : 'Generate Plan'}
               </button>
             </div>
 
             {dailyPlan && (
-              <div className="space-y-4 relative z-10">
-                {dailyPlan.greeting && (
-                  <p className="text-lg text-gray-100 flex items-center gap-2">
-                    <span>👋</span> {dailyPlan.greeting}
-                  </p>
-                )}
+              <div className="space-y-4">
+                {dailyPlan.greeting && <p className="text-lg text-gray-900 dark:text-white">{dailyPlan.greeting}</p>}
 
                 {dailyPlan.focus && (
-                  <div className="bg-gradient-to-r from-sky-900/60 to-cyan-900/60 rounded-xl p-3 border border-sky-500/30">
-                    <span className="text-sky-300">🎯 Today's destination: </span>
-                    <span className="font-semibold text-white">{dailyPlan.focus}</span>
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-3">
+                    <span className="text-gray-500 dark:text-gray-400">Today's focus: </span>
+                    <span className="font-medium text-gray-900 dark:text-white">{dailyPlan.focus}</span>
                   </div>
                 )}
 
                 {dailyPlan.tasks && dailyPlan.tasks.length > 0 && (
                   <div className="space-y-3">
                     {dailyPlan.tasks.map((task, i) => (
-                      <div key={i} className="flex items-center gap-4 p-4 bg-gradient-to-r from-cyan-900/40 to-teal-900/40 rounded-xl border border-cyan-500/20 hover:border-cyan-400/40 transition-all">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-teal-400 flex items-center justify-center font-bold text-slate-900 shadow-md">
-                          {i + 1}
-                        </div>
+                      <div key={i} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
+                        <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center font-bold text-indigo-600 dark:text-indigo-400">{i + 1}</div>
                         <div className="flex-1">
-                          <div className="font-semibold text-white">{task.title}</div>
-                          <div className="text-sm text-gray-300">{task.reason}</div>
+                          <div className="font-medium text-gray-900 dark:text-white">{task.title}</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">{task.reason}</div>
                         </div>
-                        <div className="text-sm text-cyan-300 font-medium bg-cyan-500/20 px-3 py-1 rounded-full border border-cyan-500/30">
-                          {task.duration} min
-                        </div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">{task.duration} min</div>
                       </div>
                     ))}
                   </div>
                 )}
 
                 {dailyPlan.tip && (
-                  <div className="bg-gradient-to-r from-amber-900/50 to-yellow-900/50 border border-amber-500/30 rounded-xl p-4 text-sm">
-                    <span className="text-amber-300">💡 Captain's tip: </span>
-                    <span className="text-amber-200">{dailyPlan.tip}</span>
+                  <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800/50 rounded-xl p-4 text-sm">
+                    💡 <span className="text-yellow-800 dark:text-yellow-200">{dailyPlan.tip}</span>
                   </div>
                 )}
               </div>
@@ -258,47 +185,20 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* Quick Links - Island Destinations */}
-        <section className="mb-8">
-          <h2 className="text-lg font-semibold text-white drop-shadow mb-4 flex items-center gap-2">
-            <span className="text-2xl">🏝️</span> Island Destinations
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <a
-              href="/flashcards"
-              className="group rounded-2xl border border-white/20 bg-slate-900/50 backdrop-blur-md p-5 hover:bg-slate-800/70 hover:shadow-lg hover:scale-105 transition-all text-center"
-            >
-              <div className="text-3xl mb-2 group-hover:animate-float">🐠</div>
-              <div className="font-semibold text-white">Flashcards</div>
-              <div className="text-xs text-cyan-300">Memory reef</div>
-            </a>
-            <a
-              href="/study-guides"
-              className="group rounded-2xl border border-white/20 bg-slate-900/50 backdrop-blur-md p-5 hover:bg-slate-800/70 hover:shadow-lg hover:scale-105 transition-all text-center"
-            >
-              <div className="text-3xl mb-2 group-hover:animate-float">📜</div>
-              <div className="font-semibold text-white">Study Guides</div>
-              <div className="text-xs text-cyan-300">Ancient scrolls</div>
-            </a>
-            <a
-              href="/classes"
-              className="group rounded-2xl border border-white/20 bg-slate-900/50 backdrop-blur-md p-5 hover:bg-slate-800/70 hover:shadow-lg hover:scale-105 transition-all text-center"
-            >
-              <div className="text-3xl mb-2 group-hover:animate-float">🏴‍☠️</div>
-              <div className="font-semibold text-white">My Classes</div>
-              <div className="text-xs text-cyan-300">Ship fleet</div>
-            </a>
-            <a
-              href="/goals"
-              className="group rounded-2xl border border-white/20 bg-slate-900/50 backdrop-blur-md p-5 hover:bg-slate-800/70 hover:shadow-lg hover:scale-105 transition-all text-center"
-            >
-              <div className="text-3xl mb-2 group-hover:animate-float">🏆</div>
-              <div className="font-semibold text-white">Goals</div>
-              <div className="text-xs text-amber-300">Treasure chest</div>
-            </a>
-          </div>
+        {/* Quick Links */}
+        <section className="grid grid-cols-2 gap-4">
+          <a href="/flashcards" className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 transition-colors shadow-sm">
+            <div className="text-2xl mb-2">🗂️</div>
+            <div className="font-semibold text-gray-900 dark:text-white">Flashcards</div>
+            <div className="text-sm text-gray-500">Create & review flashcards</div>
+          </a>
+          <a href="/study-guides" className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 transition-colors shadow-sm">
+            <div className="text-2xl mb-2">📖</div>
+            <div className="font-semibold text-gray-900 dark:text-white">Study Guides</div>
+            <div className="text-sm text-gray-500">Generate study guides</div>
+          </a>
         </section>
       </main>
-    </VantaWavesBackground>
+    </div>
   )
 }
